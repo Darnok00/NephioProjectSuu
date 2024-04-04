@@ -28,7 +28,16 @@ Year, Group: 2023/2024 Group 3
 ## Content
 ### 1. Introduction
 
-    
+Nephio is a cloud-native intent automation platform built on Kubernetes, designed to simplify the deployment and management of multi-vendor cloud 
+infrastructure and network functions across large-scale edge deployments. By focusing on automation, Nephio streamlines the full lifecycle management
+of entities, from provisioning to updates and decommissioning. It encompasses both network functions and the underlying infrastructure required to 
+support them, enabling automation that adapts to changing requirements. Nephio is vendor-agnostic, fostering an ecosystem for innovation while 
+ensuring interoperability. Its Kubernetes-based approach leverages declarative intent with continuous reconciliation, enabling efficient and scalable
+automation. Nephio aims to accelerate the onboarding of network functions to production and reduce the costs associated with cloud adoption, 
+ultimately enhancing agility in delivering services to customers [^1].
+This project aims at creating demo presenting Nephio capabilities.
+
+[^1]: [Learning with Nephio R1 - Episode 1 - Series Introduction](https://wiki.nephio.org/display/HOME/Learning+with+Nephio+R1+-+Episode+1+-+Series+Introduction)   
 
 ### 2. Theoretical background/technology stack
 
