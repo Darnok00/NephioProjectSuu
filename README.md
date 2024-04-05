@@ -1,7 +1,7 @@
 # Project documentation
 Project acronym: *Nephio* \
 Authors: 
-- Bartek Chwast
+- Bartłomiej Chwast
 - Karol Wrona
 - Konrad Krzemiński
 - Sławomir Tenerowicz
@@ -36,8 +36,6 @@ ensuring interoperability. Its Kubernetes-based approach leverages declarative i
 automation. Nephio aims to accelerate the onboarding of network functions to production and reduce the costs associated with cloud adoption, 
 ultimately enhancing agility in delivering services to customers [^1].
 This project aims at creating demo presenting Nephio capabilities.
-
-[^1]: [Learning with Nephio R1 - Episode 1 - Series Introduction](https://wiki.nephio.org/display/HOME/Learning+with+Nephio+R1+-+Episode+1+-+Series+Introduction)   
 
 ## 2. Theoretical background/technology stack
 
@@ -83,7 +81,16 @@ The diagram below shows the recommended system architecture benefiting from Neph
 
 ## 3. Case study concept description
 
+In our demo application we will showcase the usage of Nephio in configuring kubernetes workloads across multiple kubernetes clusters operating with different cloud providers. 
+We are going to use AWS Cloud, Azure Cloud, local Kubernetes cluster and possibly GCP.
 
+![alt text](images/diagram-poc.svg)
+
+The demo will consist of the following steps:
+1. Developer creates new workload configuration in main repository
+2. Nephio’s porch component will create new branches in each “edge” cluster repository
+3. Those changes will be approved using Nephio’s gui
+4. configsync component will update the workload configuration in each kubernetes cluster
 
 ## 4. Solution architecture
 
@@ -131,5 +138,6 @@ The diagram below shows the recommended system architecture benefiting from Neph
 
 ## 10. References
 
+[^1]: [Learning with Nephio R1 - Episode 1 - Series Introduction](https://wiki.nephio.org/display/HOME/Learning+with+Nephio+R1+-+Episode+1+-+Series+Introduction)   
     
 
