@@ -88,8 +88,6 @@ Nephio is usually known for its role in advanced networking, especially in 5G ne
 In our demo application we will showcase the usage of Nephio in configuring kubernetes workloads across multiple kubernetes clusters operating with different cloud providers. 
 We are going to use AWS Cloud, Azure Cloud, local Kubernetes cluster and possibly GCP.
 
-![alt text](images/diagram-poc.svg)
-
 The demo will consist of the following steps:
 1. Developer creates new workload configuration in main repository
 2. Nephio’s porch component will create new branches in each “edge” cluster repository
@@ -98,7 +96,21 @@ The demo will consist of the following steps:
 
 ## 4. Solution architecture
 
-    
+![alt text](images/diagram-poc.png)
+
+Our demo will be based on the following architecture:
+- **Main repository** - the main repository on **GitHub** where the developer will create workload configuration
+- **Edge repositories** - four repositories on **GitHub** for each edge cluster
+- **Nephio management cluster** - an **AWS EKS** cluster based on **AWS EC2** where Nephio components will be deployed
+- **Edge clusters**:
+  - **Azure AKS** cluster based on **Azure VM** in **Azure Cloud**
+  - **AWS EKS** cluster based on **AWS EC2** in **AWS Cloud**
+  - **Local Kubernetes** cluster based on **minikube**
+  - **GCP GKE** cluster based on **GCP VM** in **GCP**
+
+Our goal is to present how Nephio can be used to manage workload configuration across various cloud providers and local Kubernetes clusters.
+However, we are aware of possible limitations in terms of resources and costs, so we will focus on having at least two edge clusters.
+One of them will be a local Kubernetes cluster, and the second one will be an **AWS EKS** cluster.
 
 ## 5. Environment configuration description
 
