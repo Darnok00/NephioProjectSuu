@@ -81,6 +81,10 @@ The diagram below shows the recommended system architecture benefiting from Neph
 
 ## 3. Case study concept description
 
+Nephio is usually known for its role in advanced networking, especially in 5G networks and network functions. But in our project, we want to keep things simple. Let's imagine we just want to show how Nephio can be useful in different situations. So we're setting up a basic web application. But instead of anything fancy, we're just serving a simple webpage using Nginx. That simple case is enough for use case study as it's all about demonstrating how Nephio can be handy even in basic setups, not just in big, complicated networks.
+
+----
+
 In our demo application we will showcase the usage of Nephio in configuring kubernetes workloads across multiple kubernetes clusters operating with different cloud providers. 
 We are going to use AWS Cloud, Azure Cloud, local Kubernetes cluster and possibly GCP.
 
