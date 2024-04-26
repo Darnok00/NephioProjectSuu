@@ -114,6 +114,7 @@ One of them will be a local Kubernetes cluster, and the second one will be an **
 
 ## 5. Environment configuration description
 
+The configuration of the projects will be saved in yaml. The so-called base configuration on which other projects will be based will be saved in teraforrm, that will load it all. It is thanks to Nephio that a change in the base configuration will allow automatic configuration changes in other repositories.
     
 
 ## 6. Installation method
