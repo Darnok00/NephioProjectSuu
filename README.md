@@ -101,24 +101,155 @@ The demo will consist of the following steps:
 Our demo will be based on the following architecture:
 - **Main repository** - the main repository on **GitHub** where the developer will create workload configuration
 - **Edge repositories** - four repositories on **GitHub** for each edge cluster
-- **Nephio management cluster** - an **AWS EKS** cluster based on **AWS EC2** where Nephio components will be deployed
+- **Nephio management cluster** - an **microk8s** cluster based on **AWS EC2** where Nephio components will be deployed
 - **Edge clusters**:
-  - **Azure AKS** cluster based on **Azure VM** in **Azure Cloud**
-  - **AWS EKS** cluster based on **AWS EC2** in **AWS Cloud**
+  - **microk8s** cluster based on **Azure VM** in **Azure Cloud**
+  - **microk8s** cluster based on **AWS EC2** in **AWS Cloud**
   - **Local Kubernetes** cluster based on **minikube**
   - **GCP GKE** cluster based on **GCP VM** in **GCP**
 
 Our goal is to present how Nephio can be used to manage workload configuration across various cloud providers and local Kubernetes clusters.
 However, we are aware of possible limitations in terms of resources and costs, so we will focus on having at least two edge clusters.
-One of them will be a local Kubernetes cluster, and the second one will be an **AWS EKS** cluster.
+One of them will be a local Kubernetes cluster, and the second one will be an **AWS** cluster.
 
 ## 5. Environment configuration description
+
+### 5.1 AWS Infrastructure configuration
+
+```terraform
+terraform {
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 4.16"
+    }
+  }
+
+  required_version = ">= 1.2.0"
+}
+
+provider "aws" {
+  region = "us-east-1"
+}
+
+resource "aws_security_group" "nephio-sg" {
+  name        = "nephio-sg"
+  description = "Allow inbound traffic"
+
+  ingress {
+    protocol = "tcp"
+    from_port = 0
+    to_port = 65535
+    cidr_blocks   = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port        = 0
+    to_port          = 0
+    protocol         = "-1"
+    cidr_blocks      = ["0.0.0.0/0"]
+    ipv6_cidr_blocks = ["::/0"]
+  }
+}
+
+resource "aws_instance" "nephio-master" {
+  ami             = "ami-04b70fa74e45c3917"
+  instance_type   = "t2.medium"
+  key_name        = "vockey"
+  security_groups = ["nephio-sg"]
+  tags = {
+    Name = "nephio-master"
+  }
+  root_block_device {
+    volume_size = 20
+  }
+  user_data = file("nephio-master.sh")
+  user_data_replace_on_change = "true"
+}
+
+resource "aws_instance" "nephio-edge" {
+  ami             = "ami-04b70fa74e45c3917"
+  instance_type   = "t2.small"
+  key_name        = "vockey"
+  security_groups = ["nephio-sg"]
+  tags = {
+    Name = "nephio-edge-1"
+  }
+  user_data = file("nephio-edge-1.sh")
+  user_data_replace_on_change = "true"
+}
+```
 
 The configuration of the projects will be saved in yaml. The so-called base configuration on which other projects will be based will be saved in teraforrm, that will load it all. It is thanks to Nephio that a change in the base configuration will allow automatic configuration changes in other repositories.
     
 
 ## 6. Installation method
 
+### 6.1 Prepare EC2 on AWS
+
+You can use prepared terraform scripts in the 'infrastructure/aws' directory.
+
+Create at least two EC2 on AWS. One for *Master Cluster* and at least one for *Edge Cluster*. For our case *Master Clauses* is using t2.medium instance, and edge cluster is using t2.small instance. For simplicity the inboud rules accept all tcp traffic.
+
+Installation guide for *Master Cluster*:
+
+1. Install Kubernetes (in our case we were using microK8s deployment):
+> sudo snap install microk8s --classic
+2. Enable microk8s for ubuntu user
+> sudo usermod -a -G microk8s ubuntu
+> newgrp microk8s
+3. Create $HOME/.kube directory
+> mkdir .kube
+4. Enable K8s addons (optional)
+> microk8s enable dns 
+> microk8s enable dashboard
+> microk8s enable storage
+5. Copy micro8Ks configruation to .kube configuration folder
+> microk8s config > $HOME/.kube/config
+6. Install KPT tool (https://kpt.dev/)
+> wget https://github.com/GoogleContainerTools/kpt/releases/download/v1.0.0-beta.44/kpt_linux_amd64
+> sudo mv kpt_linux_amd64 /bin/kpt
+> sudo chmod +x kpt
+7. Install Nephio packages
+> kpt pkg get --for-deployment https://github.com/nephio-project/nephio-packages.git/nephio-system
+> kpt pkg get --for-deployment https://github.com/nephio-project/nephio-packages.git/nephio-configsync
+> kpt pkg get --for-deployment https://github.com/nephio-project/nephio-packages.git/nephio-webui    
+8. Initiazlize Nephio packages
+> kpt live init nephio-system
+> kpt live init nephio-configsync
+> kpt live init nephio-webui
+9. Apply Nephio packages
+> kpt live apply nephio-system --reconcile-timeout=15m --output=table
+> kpt live apply nephio-configsync --reconcile-timeout=15m --output=table
+> kpt live apply nephio-webui --reconcile-timeout=15m --output=table
+10. Forward Nephio UI
+> microk8s kubectl port-forward --namespace=nephio-webui --address 0.0.0.0 svc/nephio-webui 7007
+11. Register example packages repo
+>kpt alpha repo register \
+  --namespace default \
+  --deployment=false \
+  https://github.com/SimonTheLeg/nephio-example-packages.git
+12. Configure edge cluster repositories
+> kpt alpha repo register \
+  --namespace default \
+  --repo-basic-username=${GITHUB_USERNAME} \
+  --repo-basic-password=${GITHUB_TOKEN} \
+  --create-branch=true \
+  --deployment=true \
+  http url of your edge cluster repo 
+
+13. Confirm registering repositories
+> kubectl get repository
+
+Instalation guide for *Edge Cluster*
+
+1. Repeat steps 1-6 for *Master Cluster*
+2. Install *config-sync* package
+>kpt pkg get https://github.com/nephio-project/nephio-packages.git/nephio-configsync@v1.0.1
+3. Modify *nephio-configsync/rootsync.yaml* file by replacing url in *spec.git.repo* to point to your edge repository
+4. Apply *config-sync* package
+> kpt live init nephio-configsync
+> kpt live apply nephio-configsync --reconcile-timeout=5m
     
 
 ## 7. How to reproduce - step by step
@@ -131,64 +262,6 @@ The configuration of the projects will be saved in yaml. The so-called base conf
 
 ## 8. Demo deployment steps:
 
-
-### 8.1 Prepare EC2 on AWS
-
-Create at least two EC2 on AWS. One for *Master Cluster* and at least one for *Edge Cluster*. For our case *Master Clauses* is using t2.medium instance, and edge cluster is using t2.small instance. For simplicity the inboud rules accept all tcp traffic.
-
-Installation guide for *Master Cluster*:
-
-1. Install Kubernetes (in our case we were using microK8s deployment):
-> sudo snap install microk8s --classic
-2. Enable K8s addons (optional)
-> microk8s enable dns 
-> microk8s enable dashboard
-> microk8s enable storage
-3. Copy micro8Ks configruation to .kube configuration folder
-> microk8s config > $HOME/.kube/config
-4. Install KPT tool (https://kpt.dev/)
-> wget https://github.com/GoogleContainerTools/kpt/releases/download/v1.0.0-beta.44/kpt_linux_amd64
-> chmod +x kpt
-5. Install Nephio packages
-> kpt pkg get --for-deployment https://github.com/nephio-project/nephio-packages.git/nephio-system
-> kpt pkg get --for-deployment https://github.com/nephio-project/nephio-packages.git/nephio-configsync
-> kpt pkg get --for-deployment https://github.com/nephio-project/nephio-packages.git/nephio-webui    
-6. Initiazlize Nephio packages
-> kpt live init nephio-system
-> kpt live init nephio-configsync
-> kpt live init nephio-webui
-7. Apply Nephio packages
-> kpt live apply nephio-system --reconcile-timeout=15m --output=table
-> kpt live apply nephio-configsync --reconcile-timeout=15m --output=table
-> kpt live apply nephio-webui --reconcile-timeout=15m --output=table
-8. Forward Nephio UI
-> microk8s kubectl port-forward --namespace=nephio-webui --address 0.0.0.0 svc/nephio-webui 7007
-9. Register example packages repo
->kpt alpha repo register \
-  --namespace default \
-  --deployment=false \
-  https://github.com/SimonTheLeg/nephio-example-packages.git
-10. Configure edge cluster repositories
-> kpt alpha repo register \
-  --namespace default \
-  --repo-basic-username=${GITHUB_USERNAME} \
-  --repo-basic-password=${GITHUB_TOKEN} \
-  --create-branch=true \
-  --deployment=true \
-  http url of your edge cluster repo 
-
-11. Confirm registering repositories
-> kubectl get repository
-
-Instalation guide for *Edge Cluster*
-
-1. Repeat steps 1-4 for *Master Cluster*
-2. Install *config-sync* package
->kpt pkg get https://github.com/nephio-project/nephio-packages.git/nephio-configsync@v1.0.1
-3. Modify *nephio-configsync/rootsync.yaml* file by replacing url in *spec.git.repo* to point to your edge repository
-4. Apply *config-sync* package
-> kpt live init nephio-configsync
-> kpt live apply nephio-configsync --reconcile-timeout=5m
 
 
 ## 9. Summary – conclusions
