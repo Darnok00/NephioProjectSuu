@@ -1,11 +1,4 @@
 #!/bin/bash
-sudo -u ubuntu -i
-cd /home/ubuntu
-
-sudo snap install microk8s --classic
-
-sudo usermod -a -G microk8s ubuntu
-newgrp microk8s
 mkdir -p /home/ubuntu/.kube
 
 microk8s enable dns
@@ -35,4 +28,4 @@ kpt alpha repo register \
   --deployment=false \
   https://github.com/SimonTheLeg/nephio-example-packages.git
 
-microk8s kubectl port-forward --namespace=nephio-webui --address 0.0.0.0 svc/nephio-webui 7007
+microk8s kubectl port-forward --namespace=nephio-webui --address 0.0.0.0 svc/nephio-webui 7007 &

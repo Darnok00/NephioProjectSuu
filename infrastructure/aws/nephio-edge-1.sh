@@ -1,11 +1,4 @@
-  #!/bin/bash
-sudo -u ubuntu -i
-cd /home/ubuntu
-
-sudo snap install microk8s --classic
-
-sudo usermod -a -G microk8s ubuntu
-newgrp microk8s
+#!/bin/bash
 mkdir -p /home/ubuntu/.kube
 
 microk8s enable dns

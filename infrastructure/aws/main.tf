@@ -44,18 +44,14 @@ resource "aws_instance" "nephio-master" {
   root_block_device {
     volume_size = 20
   }
-  user_data = file("nephio-master.sh")
-  user_data_replace_on_change = "true"
 }
 
 resource "aws_instance" "nephio-edge" {
   ami             = "ami-04b70fa74e45c3917"
   instance_type   = "t2.small"
   key_name        = "vockey"
-  security_groups = ["nephio-sg"]
+  vpc_security_group_ids = [aws_security_group.nephio-sg.id]
   tags = {
     Name = "nephio-edge-1"
   }
-  user_data = file("nephio-edge-1.sh")
-  user_data_replace_on_change = "true"
 }
