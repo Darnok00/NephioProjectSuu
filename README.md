@@ -192,55 +192,56 @@ Installation guide for *Master Cluster*:
 1. SSH to nephio-master EC2 instance
 2. Copy `infrastructure/aws/nephio-common.sh` and `infrastructure/aws/nephio-master.sh` scripts to nephio-master EC2 instance
 3. Make scripts executable `chmod +x nephio-common.sh nephio-master.sh`
-4. Run initial installation script `infrastructure/aws/nephio-common.sh`
-5. Run initial installation script `infrastructure/aws/nephio-master.sh`
-6. Open second ssh session to nephio-master EC2 instance
-7. Register example packages repo
->kpt alpha repo register \
-  --namespace default \
-  --deployment=false \
-  https://github.com/Darnok00/NephioProjectSUU.git
-8. Configure edge cluster repositories
-> kpt alpha repo register \
-  --namespace default \
-  --repo-basic-username=${GITHUB_USERNAME} \
-  --repo-basic-password=${GITHUB_TOKEN} \
-  --create-branch=true \
-  --deployment=true \
-  http url of your edge cluster repo
-9. Confirm registering repositories
-> kubectl get repository
+4. Run initial installation script `./nephio-common.sh`
+5. Run initial installation script `./nephio-master.sh`
 
 Instalation guide for *Edge Cluster*
 
 1. SSH to nephio-edge-1 EC2 instance
 2. Copy `infrastructure/aws/nephio-common.sh` and `infrastructure/aws/nephio-edge-1.sh` scripts to nephio-edge-1 EC2 instance
 3. Make scripts executable `chmod +x nephio-common.sh nephio-edge-1.sh`
-4. Run initial installation script `infrastructure/aws/nephio-common.sh`
-5. Run initial installation script `infrastructure/aws/nephio-edge-1.sh`
+4. Run initial installation script `./nephio-common.sh`
+5. Run initial installation script `./nephio-edge-1.sh`
 6. Modify *nephio-configsync/rootsync.yaml* file by replacing url in *spec.git.repo* to point to your edge repository
 7. Apply *config-sync* package
-> kpt live init nephio-configsync
-> kpt live apply nephio-configsync --reconcile-timeout=5m
+> kpt live init nephio-configsync \
+  kpt live apply nephio-configsync --reconcile-timeout=5m
+    
+### 6.2 Prepare local Kubernetes cluster
+
+1. Copy `infrastructure/local/nephio-common.sh` and `infrastructure/local/nephio-edge-2.sh` scripts to your home directory
+2. Make scripts executable `chmod +x nephio-common.sh nephio-edge-2.sh`
+3. Run initial installation script `./nephio-common.sh`
+4. Run initial installation script `./nephio-edge-2.sh`
+5. Modify *nephio-configsync/rootsync.yaml* file by replacing url in *spec.git.repo* to point to your edge repository
+6. Apply *config-sync* package
+> kpt live init nephio-configsync \
+  kpt live apply nephio-configsync --reconcile-timeout=5m
+
+### 6.3 Prepare Azure VM
+
+## 7. Demo deployment steps:
+
+### 7.1 Open Nephio Web UI available at `http://<nephio-master-public-ip>:7007`
+
+### 7.1 Register blueprints repository `https://github.com/bchwast/nephio-packages.git` and deployment repositories `https://github.com/bchwast/nephio-edge-1.git`, `https://github.com/bchwast/nephio-edge-2.git`
+
+### 7.2 Apply deployment
+
+microk8s kubectl port-forward --namespace=kuard --address 0.0.0.0 service/kuard-srv 8080:80 &
+microk8s kubectl port-forward --namespace=kuard --address localhost service/kuard-srv 8080:80 &
+
+### 7.3 Modify deployment
+
+### 7.4 Apply different deployment
+
+### 7.5 Create new blueprint
+
+## 8. Summary – conclusions
+
     
 
-## 7. How to reproduce - step by step
-
-    
-
-### 7.1. Infrastructure as Code approach
-
-    
-
-## 8. Demo deployment steps:
-
-
-
-## 9. Summary – conclusions
-
-    
-
-## 10. References
+## 9. References
 
 [^1]: [Learning with Nephio R1 - Episode 1 - Series Introduction](https://wiki.nephio.org/display/HOME/Learning+with+Nephio+R1+-+Episode+1+-+Series+Introduction)   
     

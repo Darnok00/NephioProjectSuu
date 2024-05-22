@@ -23,9 +23,4 @@ kpt live apply nephio-system --reconcile-timeout=15m --output=table
 kpt live apply nephio-configsync --reconcile-timeout=15m --output=table
 kpt live apply nephio-webui --reconcile-timeout=15m --output=table
 
-kpt alpha repo register \
-  --namespace default \
-  --deployment=false \
-  https://github.com/SimonTheLeg/nephio-example-packages.git
-
 microk8s kubectl port-forward --namespace=nephio-webui --address 0.0.0.0 svc/nephio-webui 7007 &
