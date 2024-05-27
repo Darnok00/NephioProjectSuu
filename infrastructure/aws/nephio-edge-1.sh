@@ -11,4 +11,4 @@ wget https://github.com/GoogleContainerTools/kpt/releases/download/v1.0.0-beta.4
 sudo mv kpt_linux_amd64 /bin/kpt
 chmod +x /bin/kpt
 
-kpt pkg get https://github.com/nephio-project/nephio-packages.git/nephio-configsync@v1.0.1
+kpt pkg get --for-deployment https://github.com/nephio-project/catalog.git/nephio/core/configsync

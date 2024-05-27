@@ -101,7 +101,7 @@ The demo will consist of the following steps:
 Our demo will be based on the following architecture:
 - **Main repository** - the main repository on **GitHub** where the developer will create workload configuration
 - **Edge repositories** - four repositories on **GitHub** for each edge cluster
-- **Nephio management cluster** - an **microk8s** cluster based on **AWS EC2** where Nephio components will be deployed
+- **Nephio management cluster** - a **microk8s** cluster based on **AWS EC2** where Nephio components will be deployed
 - **Edge clusters**:
   - **microk8s** cluster based on **Azure VM** in **Azure Cloud**
   - **microk8s** cluster based on **AWS EC2** in **AWS Cloud**
@@ -202,10 +202,10 @@ Instalation guide for *Edge Cluster*
 3. Make scripts executable `chmod +x nephio-common.sh nephio-edge-1.sh`
 4. Run initial installation script `./nephio-common.sh`
 5. Run initial installation script `./nephio-edge-1.sh`
-6. Modify *nephio-configsync/rootsync.yaml* file by replacing url in *spec.git.repo* to point to your edge repository
+6. Copy contents of `infrastructure/local/rootsync.yaml` to *configsync/rootsync.yaml* file with replacing url in *spec.git.repo* to point to your edge repository
 7. Apply *config-sync* package
-> kpt live init nephio-configsync \
-  kpt live apply nephio-configsync --reconcile-timeout=5m
+> kpt live init configsync \
+  kpt live apply configsync --reconcile-timeout=5m
     
 ### 6.2 Prepare local Kubernetes cluster
 
@@ -213,10 +213,10 @@ Instalation guide for *Edge Cluster*
 2. Make scripts executable `chmod +x nephio-common.sh nephio-edge-2.sh`
 3. Run initial installation script `./nephio-common.sh`
 4. Run initial installation script `./nephio-edge-2.sh`
-5. Modify *nephio-configsync/rootsync.yaml* file by replacing url in *spec.git.repo* to point to your edge repository
+5. Copy contents of `infrastructure/local/rootsync.yaml` to *configsync/rootsync.yaml* file with replacing url in *spec.git.repo* to point to your edge repository
 6. Apply *config-sync* package
-> kpt live init nephio-configsync \
-  kpt live apply nephio-configsync --reconcile-timeout=5m
+> kpt live init configsync \
+  kpt live apply configsync --reconcile-timeout=5m
 
 ### 6.3 Prepare Azure VM
 

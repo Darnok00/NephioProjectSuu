@@ -11,16 +11,13 @@ wget https://github.com/GoogleContainerTools/kpt/releases/download/v1.0.0-beta.4
 sudo mv kpt_linux_amd64 /bin/kpt
 chmod +x /bin/kpt
 
-kpt pkg get --for-deployment https://github.com/nephio-project/nephio-packages.git/nephio-system
-kpt pkg get --for-deployment https://github.com/nephio-project/nephio-packages.git/nephio-configsync
-kpt pkg get --for-deployment https://github.com/nephio-project/nephio-packages.git/nephio-webui
+kpt pkg get --for-deployment https://github.com/nephio-project/catalog.git/nephio/core
+kpt pkg get --for-deployment https://github.com/nephio-project/catalog.git/nephio/optional/webui
 
-kpt live init nephio-system
-kpt live init nephio-configsync
-kpt live init nephio-webui
+kpt live init core
+kpt live init webui
 
-kpt live apply nephio-system --reconcile-timeout=15m --output=table
-kpt live apply nephio-configsync --reconcile-timeout=15m --output=table
-kpt live apply nephio-webui --reconcile-timeout=15m --output=table
+kpt live apply core --reconcile-timeout=15m --output=table
+kpt live apply webui --reconcile-timeout=15m --output=table
 
 microk8s kubectl port-forward --namespace=nephio-webui --address 0.0.0.0 svc/nephio-webui 7007 &
