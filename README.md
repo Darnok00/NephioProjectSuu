@@ -14,15 +14,17 @@ Year, Group: 2023/2024 Group 3
 - [3. Case study concept description](#3-case-study-concept-description)
 - [4. Solution architecture](#4-solution-architecture)
 - [5. Environment configuration description](#5-environment-configuration-description)
+    - [5.1 AWS Infrastructure configuration](#51-aws-infrastructure-configuration)
+    - [5.2 Sample Kubernetes workload](#52-sample-kubernetes-workload)
 - [6. Installation method](#6-installation-method)
-- [7. How to reproduce - step by step](#7-how-to-reproduce---step-by-step)
-     - [7.1. Infrastructure as Code approach](#71-infrastructure-as-code-approach)
-- [8. Demo deployment steps:](#8-demo-deployment-steps)
-    - [8.1. Configuration set-up](#81-configuration-set-up)
-    - [8.2. Data preparation](#82-data-preparation)
-    - [8.3. Execution procedure](#83-execution-procedure)
-    - [8.4. Results presentation](#84-results-presentation)
-- [9. Summary – conclusions](#9-summary-–-conclusions)
+    - [6.1 Prepare EC2 on AWS](#61-prepare-ec2-on-aws)
+    - [6.2 Prepare local Kubernetes cluster](#62-prepare-local-kubernetes-cluster)
+- [7. Demo deployment steps:](#8-demo-deployment-steps)
+    - [7.1 Registering repositories in Nephio](#71-registering-repositories-in-nephio)
+    - [7.2 Applying deployment](#72-applying-deployment)
+    - [7.3 Inspect deployments](#73-inspect-deployments)
+    - [7.4 Modify deployment](#74-modify-deployment)
+- [8. Summary – conclusions](#9-summary-–-conclusions)
 - [10. References](#10-references)
 
 ## Content
@@ -176,10 +178,21 @@ resource "aws_instance" "nephio-edge" {
 }
 ```
 
-The configuration of the projects will be saved in yaml. The so-called base configuration on which other projects will be based will be saved in teraforrm, that will load it all. It is thanks to Nephio that a change in the base configuration will allow automatic configuration changes in other repositories.
-    
+We will use the above terraform script to create two EC2 instances on AWS. One will be used as a *Master Cluster* and the second one as an *Edge Cluster*.
+Additionally, we will create a security group allowing all inbound TCP traffic and all outbound traffic.
+
+### 5.2 Sample Kubernetes workload
+
+You can find a sample Kubernetes workload which will be used in the demo in th `demo-workload` directory.
+We will use a simple Kuard application used during Kubernetes labs.
 
 ## 6. Installation method
+
+### Prerequisites:
+
+#### 1. Ubuntu local machine (this guide is based on Ubuntu 22.04 LTS, if you are using different OS, please adjust the commands accordingly)
+#### 2. Access to AWS account, with installed AWS CLI and configured credentials on your local machine
+#### 3. Installed Terraform on your local machine 
 
 ### 6.1 Prepare EC2 on AWS
 
@@ -218,24 +231,131 @@ Instalation guide for *Edge Cluster*
 > kpt live init configsync \
   kpt live apply configsync --reconcile-timeout=5m
 
-### 6.3 Prepare Azure VM
-
 ## 7. Demo deployment steps:
 
-### 7.1 Open Nephio Web UI available at `http://<nephio-master-public-ip>:7007`
+### 7.1 Registering repositories in Nephio
 
-### 7.1 Register blueprints repository `https://github.com/bchwast/nephio-packages.git` and deployment repositories `https://github.com/bchwast/nephio-edge-1.git`, `https://github.com/bchwast/nephio-edge-2.git`
+#### Open Nephio Web UI in your browser
 
-### 7.2 Apply deployment
+It is available at `http://<nephio-master-public-ip>:7007`
 
-microk8s kubectl port-forward --namespace=kuard --address 0.0.0.0 service/kuard-srv 8080:80 &
-microk8s kubectl port-forward --namespace=kuard --address localhost service/kuard-srv 8080:80 &
+![alt text](images/nephio-web-ui.png)
 
-### 7.3 Modify deployment
+#### Register blueprints repository and deployment repositories `https://github.com/bchwast/nephio-edge-1.git`, `https://github.com/bchwast/nephio-edge-2.git`
 
-### 7.4 Apply different deployment
+* Click on `Register Repository` link in the **Team Blueprints** section
+* Enter repository URL with packages (`https://github.com/bchwast/nephio-packages` in this demo) and click `Next` button
+* Add authentication token for the repository (if needed) and click `Next` button
+* Add repository description (if needed) and click `Next` button
+* Choose `Team Blueprints` option and click `Next` button
+* Click `Register Repository` button
 
-### 7.5 Create new blueprint
+After that you should see blueprints available in added repository.
+
+![alt text](images/nephio-blueprints.png)
+
+#### Register deployment repositories
+
+* Go back to the main page
+* Click on `Register Repository` link in the **Deployments** section
+* Enter repository URL with deployment repository (`https://github.com/bchwast/nephio-edge-1` in this demo) and click `Next` button
+* Add authentication token for the repository (if needed) and click `Next` button
+* Add repository description (if needed) and click `Next` button
+* Choose `Deployments` option and click `Next` button
+* Click `Register Repository` button
+
+After that you should see empty deployments' repository.
+
+![alt text](images/nephio-edge-1-empty.png)
+
+#### Repeat above steps for the second edge repository (`https://github.com/bchwast/nephio-edge-2` in this demo)
+
+![alt text](images/nephio-edge-2-empty.png)
+
+### 7.2 Applying deployment
+
+#### Apply deployment for the first edge cluster (`nephio-edge-1`) on AWS
+
+* Go to the `nephio-edge-1` deployment page
+* Click on `Add Deployment` button
+* Select `Create a new deployment by cloning a team blueprint`, leave `nephio-packages` as a source repository, select `kuard` blueprint and click `Next` button
+* Add metadata for the deployment (if needed) and click `Next` button
+* Change namespace (if needed) and click `Next` button
+* Select whether to validate resources and click `Next` button
+* Click `Create Deployment` button
+
+In the background Nephio will create a new branch in the `nephio-edge-1` repository with the deployment configuration.
+
+![alt text](images/nephio-edge-1-propose.png)
+
+You can inspect proposed deployment and add changes if needed by clicking `Edit` button.
+
+* Click `Propose` button to propose changes
+
+In the background Nephio will create a pull request in the `nephio-edge-1` repository.
+
+![alt text](images/nephio-edge-1-approve.png)
+
+Second developer should now review proposed deployment and approve it or reject it by clicking appropriate button.
+
+* Click `Approve` button to approve changes
+
+In the background Nephio will merge pull request and apply deployment configuration to the edge cluster.
+
+#### Apply deployment for the second edge cluster (`nephio-edge-2`) on your local machine
+
+Repeat above steps for the second edge repository (`https://github.com/bchwast/nephio-edge-2` in this demo)
+
+![alt text](images/nephio-edge-2-approved.png)
+
+### 7.3 Inspect deployments
+
+#### Inspect deployment on the first edge cluster (`nephio-edge-1`) on AWS
+
+* SSH to the `nephio-edge-1` EC2 instance
+* Check if deployment is running by executing `microk8s kubectl get pods -n kuard` command
+
+![alt text](images/nephio-edge-1-running-pods.png)
+
+* Port forward service to access application
+> microk8s kubectl port-forward --namespace=kuard --address 0.0.0.0 service/kuard-srv 8080:80 &
+* Open browser and go to `http://<nephio-edge-1-public-ip>:8080` to see the application
+
+![alt text](images/nephio-edge-1-kuard.png)
+
+#### Inspect deployment on the second edge cluster (`nephio-edge-2`) on local machine
+
+* Open terminal session on your local machine
+* Check if deployment is running by executing `microk8s kubectl get pods -n kuard` command
+
+![alt text](images/nephio-edge-2-running-pods.png)
+
+* Port forward service to access application
+> microk8s kubectl port-forward --namespace=kuard --address localhost service/kuard-srv 8080:80 &
+* Open browser and go to `http://localhost:8080` to see the application
+
+![alt text](images/nephio-edge-2-kuard.png)
+
+### 7.4 Modify deployment
+
+#### Modify deployment on the first edge cluster (`nephio-edge-1`) on AWS
+
+* Go to the `nephio-edge-1` deployment page
+* Click `Create New Revision` button
+* Click `Edit` button to modify deployment, enter changes and click `Save` button (In this demo we will change the number of replicas from 3 to 5)
+* Click `Propose` button and then `Approve` button
+
+![alt text](images/nephio-edge-1-updated.png)
+
+* SSH to the `nephio-edge-1` EC2 instance
+* Check if deployment has been updated by executing `microk8s kubectl get pods -n kuard` command
+
+![alt text](images/nephio-edge-1-updated-pods.png)
+
+[//]: # (### 7.4 Apply different deployment)
+
+[//]: # ()
+[//]: # (### 7.5 Create new blueprint)
 
 ## 8. Summary – conclusions
 
