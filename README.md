@@ -19,15 +19,15 @@ Year, Group: 2023/2024 Group 3
 - [6. Installation method](#6-installation-method)
     - [6.1 Prepare EC2 on AWS](#61-prepare-ec2-on-aws)
     - [6.2 Prepare local Kubernetes cluster](#62-prepare-local-kubernetes-cluster)
-- [7. Demo deployment steps:](#8-demo-deployment-steps)
+- [7. Demo deployment steps:](#7-demo-deployment-steps)
     - [7.1 Registering repositories in Nephio](#71-registering-repositories-in-nephio)
     - [7.2 Applying deployment](#72-applying-deployment)
     - [7.3 Inspect deployments](#73-inspect-deployments)
     - [7.4 Modify deployment](#74-modify-deployment)
     - [7.5 Apply different deployment](#75-apply-different-deployment)
     - [7.6 Create new blueprint](#76-create-new-blueprint)
-- [8. Summary – conclusions](#9-summary-–-conclusions)
-- [9. References](#10-references)
+- [8. Summary – conclusions](#8-summary-–-conclusions)
+- [9. References](#9-references)
 
 ## Content
 ## 1. Introduction
@@ -409,12 +409,22 @@ Repeat above steps for the second edge repository (`https://github.com/bchwast/n
 
 ## 8. Summary – conclusions
 
+The project aimed to showcase Nephio, a cloud-native intent automation platform built on Kubernetes, 
+and its ability to manage and simplify multi-vendor cloud infrastructure and network functions. The demonstration involved setting up cloud environments. 
+Terraform scripts were used to configure EC2 instances and necessary security settings.
+
 In this project we conducted a study to explore Nephio technology and its capabilities. 
 
 * We have presented the theoretical background of Nephio and its technology stack.
 * We have created a demo showcasing how Nephio can be used to manage workload configuration across various cloud providers and local Kubernetes clusters. 
 * We have successfully deployed a simple web application using Nginx and Kuard on AWS and local Kubernetes cluster. 
 * We have also shown how to modify deployments and create new blueprints using Nephio Web UI.
+
+Nephio components were successfully deployed on these clusters, establishing a functional management framework. 
+Nephio effectively automated the deployment process, managed configurations, scaled applications, and maintained operations across different environments.
+
+The project validated Nephio’s ability to simplify lifecycle management, enhance operational efficiency, and reduce costs associated with cloud infrastructure management. 
+This demonstration highlighted Nephio's flexibility, interoperability, and efficiency in handling complex, multi-cloud setups.
 
 We learned that Nephio is a powerful tool that can be used to automate the deployment and management of cloud infrastructure and network functions across large-scale edge deployments.
 It is a vendor-agnostic solution that fosters an ecosystem for innovation while ensuring interoperability. 
