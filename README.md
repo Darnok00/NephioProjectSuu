@@ -358,8 +358,11 @@ Repeat above steps for the second edge repository (`https://github.com/bchwast/n
 [//]: # (### 7.5 Create new blueprint)
 
 ## 8. Summary – conclusions
+The project aimed to showcase Nephio, a cloud-native intent automation platform built on Kubernetes, and its ability to manage and simplify multi-vendor cloud infrastructure and network functions. The demonstration involved setting up cloud environments, specifically using AWS for the Nephio management cluster and additional clusters on AWS, Azure, and a local environment. Terraform scripts were used to configure EC2 instances and necessary security settings.
 
-    
+Nephio components were successfully deployed on these clusters, establishing a functional management framework. The demonstration included deploying a sample web application (Nginx) across multiple Kubernetes clusters to showcase Nephio's automation capabilities. Nephio effectively automated the deployment process, managed configurations, scaled applications, and maintained operations across different environments.
+
+The project validated Nephio’s ability to simplify lifecycle management, enhance operational efficiency, and reduce costs associated with cloud infrastructure management. This demonstration highlighted Nephio's flexibility, interoperability, and efficiency in handling complex, multi-cloud setups.
 
 ## 9. References
 
