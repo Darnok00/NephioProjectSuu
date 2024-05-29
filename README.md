@@ -24,8 +24,10 @@ Year, Group: 2023/2024 Group 3
     - [7.2 Applying deployment](#72-applying-deployment)
     - [7.3 Inspect deployments](#73-inspect-deployments)
     - [7.4 Modify deployment](#74-modify-deployment)
+    - [7.5 Apply different deployment](#75-apply-different-deployment)
+    - [7.6 Create new blueprint](#76-create-new-blueprint)
 - [8. Summary – conclusions](#9-summary-–-conclusions)
-- [10. References](#10-references)
+- [9. References](#10-references)
 
 ## Content
 ## 1. Introduction
@@ -112,7 +114,7 @@ Our demo will be based on the following architecture:
 
 Our goal is to present how Nephio can be used to manage workload configuration across various cloud providers and local Kubernetes clusters.
 However, we are aware of possible limitations in terms of resources and costs, so we will focus on having at least two edge clusters.
-One of them will be a local Kubernetes cluster, and the second one will be an **AW** cluster.
+One of them will be a local Kubernetes cluster, and the second one will be an **AWS** cluster.
 
 ## 5. Environment configuration description
 
@@ -183,8 +185,8 @@ Additionally, we will create a security group allowing all inbound TCP traffic a
 
 ### 5.2 Sample Kubernetes workload
 
-You can find a sample Kubernetes workload which will be used in the demo in th `demo-workload` directory.
-We will use a simple Kuard application used during Kubernetes labs.
+You can find a sample Kubernetes workloads which will be used in the demo in th `demo-workload` directory.
+We will use a simple Kuard application used during Kubernetes labs and static html page served on Nginx.
 
 ## 6. Installation method
 
@@ -341,6 +343,7 @@ Repeat above steps for the second edge repository (`https://github.com/bchwast/n
 #### Modify deployment on the first edge cluster (`nephio-edge-1`) on AWS
 
 * Go to the `nephio-edge-1` deployment page
+* Go to `kuard` deployment page
 * Click `Create New Revision` button
 * Click `Edit` button to modify deployment, enter changes and click `Save` button (In this demo we will change the number of replicas from 3 to 5)
 * Click `Propose` button and then `Approve` button
@@ -352,17 +355,80 @@ Repeat above steps for the second edge repository (`https://github.com/bchwast/n
 
 ![alt text](images/nephio-edge-1-updated-pods.png)
 
-[//]: # (### 7.4 Apply different deployment)
+### 7.5 Apply different deployment
 
-[//]: # ()
-[//]: # (### 7.5 Create new blueprint)
+#### Apply second deployment on the first edge cluster (`nephio-edge-1`) on AWS
+
+* Go to the `nephio-edge-1` deployment page
+* Click on `Add Deployment` button
+* Select `Create a new deployment by cloning a team blueprint`, leave `nephio-packages` as a source repository, select `nginx` blueprint and click `Next` button
+* Add metadata for the deployment (if needed) and click `Next` button
+* Change namespace (if needed) and click `Next` button
+* Select whether to validate resources and click `Next` button
+* Click `Create Deployment` button
+* Click `Propose` button to propose changes
+* Click `Approve` button to approve changes
+
+![alt text](images/nephio-edge-1-nginx-ui.png)
+
+#### Inspect deployment on the first edge cluster (`nephio-edge-1`) on AWS
+
+* SSH to the `nephio-edge-1` EC2 instance
+* Check if deployment is running by executing `microk8s kubectl get pods -n nginx` command
+* Check if previous deployment is running by executing `microk8s kubectl get pods -n kuard` command
+
+![alt text](images/nephio-edge-1-nginx-pods.png)
+
+* Port forward service to access application
+> microk8s kubectl port-forward --namespace=nginx --address 0.0.0.0 service/nginx-srv 8081:80 &
+* Open browser and go to `http://<nephio-edge-1-public-ip>:8081` to see the application
+
+![alt text](images/nephio-edge-1-nginx-website.png)
+
+### 7.6 Create new blueprint
+
+#### Create new blueprint in the `nephio-packages` repository
+
+![alt text](images/nephio-blueprints.png)
+
+* Go to the `Team Blueprints` page
+* Click on `Add Team Blueprint` button
+* Select `Create a new team blueprint by cloning a team blueprint`, leave `nephio-packages` as a source and destination repository, select `nginx` blueprint and click `Next` button
+* Add metadata for the deployment (if needed) and click `Next` button
+* Change namespace (if needed) and click `Next` button
+* Select whether to validate resources and click `Next` button
+* Click `Edit` button to modify deployment, enter changes and click `Save` button (In this demo we will change the number of replicas from 2 to 10)
+* Click `Propose` button to propose changes
+* Click `Approve` button to approve changes
+
+![alt text](images/nephio-blueprint-nginx-new.png)
+
+* Go back to the `Team Blueprints` page
+
+![alt text](images/nephio-blueprints-new.png)
 
 ## 8. Summary – conclusions
 
-    
+In this project we conducted a study to explore Nephio technology and its capabilities. 
+
+* We have presented the theoretical background of Nephio and its technology stack.
+* We have created a demo showcasing how Nephio can be used to manage workload configuration across various cloud providers and local Kubernetes clusters. 
+* We have successfully deployed a simple web application using Nginx and Kuard on AWS and local Kubernetes cluster. 
+* We have also shown how to modify deployments and create new blueprints using Nephio Web UI.
+
+We learned that Nephio is a powerful tool that can be used to automate the deployment and management of cloud infrastructure and network functions across large-scale edge deployments.
+It is a vendor-agnostic solution that fosters an ecosystem for innovation while ensuring interoperability. 
+Its Kubernetes-based approach leverages declarative intent with continuous reconciliation, enabling efficient and scalable automation. 
+Nephio aims to accelerate the onboarding of network functions to production and reduce the costs associated with cloud adoption, ultimately enhancing agility in delivering services to customers.
 
 ## 9. References
 
-[^1]: [Learning with Nephio R1 - Episode 1 - Series Introduction](https://wiki.nephio.org/display/HOME/Learning+with+Nephio+R1+-+Episode+1+-+Series+Introduction)   
-    
-
+[^1]: [Learning with Nephio R1 - Episode 1 - Series Introduction](https://wiki.nephio.org/display/HOME/Learning+with+Nephio+R1+-+Episode+1+-+Series+Introduction)\
+[^2]: [Nephio - GitHub Repository](https://github.com/nephio-project)\
+[^3]: [AWS - Amazon Web Services](https://aws.amazon.com/)\
+[^4]: [Kubernetes](https://kubernetes.io/)\
+[^5]: [Terraform](https://www.terraform.io/)\
+[^6]: [Nginx](https://www.nginx.com/)\
+[^7]: [Kuard](https://github.com/kubernetes-up-and-running/kuard)\
+[^8]: [Kpt](https://kpt.dev/)\
+[^9]: [Microk8s](https://microk8s.io/)
