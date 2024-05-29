@@ -433,12 +433,12 @@ Nephio aims to accelerate the onboarding of network functions to production and 
 
 ## 9. References
 
-[^1]: [Learning with Nephio R1 - Episode 1 - Series Introduction](https://wiki.nephio.org/display/HOME/Learning+with+Nephio+R1+-+Episode+1+-+Series+Introduction)\
-[^2]: [Nephio - GitHub Repository](https://github.com/nephio-project)\
-[^3]: [AWS - Amazon Web Services](https://aws.amazon.com/)\
-[^4]: [Kubernetes](https://kubernetes.io/)\
-[^5]: [Terraform](https://www.terraform.io/)\
-[^6]: [Nginx](https://www.nginx.com/)\
-[^7]: [Kuard](https://github.com/kubernetes-up-and-running/kuard)\
-[^8]: [Kpt](https://kpt.dev/)\
-[^9]: [Microk8s](https://microk8s.io/)
+[1]: [Learning with Nephio R1 - Episode 1 - Series Introduction](https://wiki.nephio.org/display/HOME/Learning+with+Nephio+R1+-+Episode+1+-+Series+Introduction)\
+[2]: [Nephio - GitHub Repository](https://github.com/nephio-project)\
+[3]: [AWS - Amazon Web Services](https://aws.amazon.com/)\
+[4]: [Kubernetes](https://kubernetes.io/)\
+[5]: [Terraform](https://www.terraform.io/)\
+[6]: [Nginx](https://www.nginx.com/)\
+[7]: [Kuard](https://github.com/kubernetes-up-and-running/kuard)\
+[8]: [Kpt](https://kpt.dev/)\
+[9]: [Microk8s](https://microk8s.io/)
